@@ -29,6 +29,7 @@ const suppliers = {
 			wireRope_1mm8_100m:         [66.73,   1, 'https://es.rs-online.com/web/p/products/1244748/'],
 			shaft_20_1000:              [40.47,   3, 'https://es.rs-online.com/web/p/varillas-barras-tubos-hexagonales-de-acero/0770440/'],
 			bearing_20_32_7:            [ 3.10,   1, 'https://es.rs-online.com/web/p/rodamientos-de-bola/6190323/'],
+			castorWheel:                [16.40,   1, 'https://es.rs-online.com/web/p/ruedas-industriales/7871402/'],
 			threadedRivet_M8:           [19.81, 100, 'https://es.rs-online.com/web/p/remaches/7689984/'],
 			flangedNut_M8_8:            [11.15, 100, 'https://es.rs-online.com/web/p/tuercas-hexagonales-con-reborde/0275484/'],
 			lockNut_M8_8:               [ 9.67, 100, 'https://es.rs-online.com/web/p/tuercas-de-bloqueo/1224373/'],
@@ -98,6 +99,9 @@ const parts = {
 	hoistRope:                                     p.wireRope_1mm8_100m, // cut for 4 pieces
 	pulleyBearings:                                [p.bearing_20_32_7, 8.5 * legCount], // 4 at top, 2 on bottom outside, 1 bottom inside, 1(2 on half of legs) for directing cable to spool
 	shaft:                                         [p.shaft_20_1000, 2],
+	wheel:                                         [p.castorWheel, legCount],
+	// add wheels here
+	// nuts, washers and bolts:
 	shaftWashers:                                  [p.washer_M8_25_1mm5, shaftFastenerCount], // goes on the bolts not the shaft itself
 	shaftBolts:                                    [p.allenBolt_M8_20, shaftFastenerCount],
 	lowerShaftSupport:                             [p.plate_2_2000_1000, 0.1], // dont need an entire sheet but order one because its useful
@@ -169,7 +173,7 @@ const write = (...values) => {
 	}
 }
 
-const indentation = 2;
+const indentation = 4;
 
 let cumulativeColumnPosition = indentation;
 
@@ -200,8 +204,8 @@ const summaryValueIndentation = Math.max(...summaryRows.map(summaryRow => summar
 
 for (const [supplierName, supplier] of Object.entries(suppliers)) {
 	moveCursor();
-	write('\n', supplierName, ':\n');
-	write('\x1b[4;37m');
+	write('\n  \x1b[4;37m', supplierName, ':\x1b[0m\n');
+	write('\x1b[4;36m');
 	for (const column of columns) {
 		moveCursor(column.position);
 		write(column.title);
@@ -211,15 +215,15 @@ for (const [supplierName, supplier] of Object.entries(suppliers)) {
 	const supplierProductEntries = Object.entries(supplier.products);
 	for (const productIndex in supplierProductEntries) {
 		const [productKey, product] = supplierProductEntries[productIndex];
-		const even = !(productIndex % 2);
-		if (even) {
+		const odd = (productIndex % 2);
+		if (odd) {
 			write('\x1b[0;36m');
 		}
 		for (const column of columns) {
 			moveCursor(column.position);
 			write(product[column.key]);
 		}
-		if (even) {
+		if (odd) {
 			write('\x1b[0m');
 		}
 		write('\n');
